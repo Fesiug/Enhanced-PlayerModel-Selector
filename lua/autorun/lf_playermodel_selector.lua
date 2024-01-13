@@ -2,6 +2,12 @@
 -- Upgraded code by LibertyForce http://steamcommunity.com/id/libertyforce
 -- Based on: https://github.com/garrynewman/garrysmod/blob/1a2c317eeeef691e923453018236cf9f66ee74b4/garrysmod/gamemodes/sandbox/gamemode/editor_player.lua
 
+local GmodLanguage = string.lower(GetConVar("gmod_language"):GetString())
+
+function EPSLanguageChanged()
+	GmodLanguage = string.lower(GetConVar("gmod_language"):GetString())
+end
+cvars.AddChangeCallback( "gmod_language", EPSLanguageChanged, "EPSLanguageChanged" )
 
 local flag = { FCVAR_REPLICATED }
 if SERVER then flag = { FCVAR_ARCHIVE, FCVAR_REPLICATED } end
@@ -380,7 +386,7 @@ end
 if CLIENT then
 
 
-local Version = "3.3, Fesiug's Edit"
+local Version = "3.8"
 local Menu = { }
 local Frame
 local default_animations = { "idle_all_01", "menu_walk", "pose_standing_02", "pose_standing_03", "idle_fist" }
@@ -470,8 +476,9 @@ function Menu.Setup()
 
 	Frame = vgui.Create( "DFrame" )
 	local fw, fh = math.min( ScrW() - 16, 960 ), math.min( ScrH() - 16, 700 )
+	-- Frame:SetSize( ScrW(), ScrH() )
 	Frame:SetSize( fw, fh )
-	Frame:SetTitle( "Enhanced PlayerModel Selector "..Version )
+	Frame:SetTitle( string.format(language.GetPhrase("EPS.Title"),Version) )
 	Frame:SetVisible( true )
 	Frame:SetDraggable( true )
 	Frame:SetScreenLock( false )
@@ -515,9 +522,19 @@ function Menu.Setup()
 			Frame:SetSize( ScrW(), ScrH() )
 			Frame:Center()
 			Frame:SetDraggable( false )
-			Menu.ApplyButton:SetPos( ScrW() - 560, 30 )
+			
+			if GmodLanguage == "ru" then
+				Menu.ApplyButton:SetPos( ScrW() - 580, 30 )
+				Menu.AdvButton:SetPos( ScrW() - 220, 3 )
+			elseif GmodLanguage == "tr" then
+				Menu.ApplyButton:SetPos( ScrW() - 560, 30 )
+				Menu.AdvButton:SetPos( ScrW() - 240, 3 )
+			else
+				Menu.ApplyButton:SetPos( ScrW() - 560, 30 )
+				Menu.AdvButton:SetPos( ScrW() - 200, 3 )
+			end
+			
 			Menu.ResetButton:SetPos( 5, ScrH() - 25 )
-			Menu.AdvButton:SetPos( ScrW() - 200, 3 )
 			maxi_mode = 1
 		elseif maxi_allowed and maxi_mode == 1 then
 			Menu.ApplyButton:SetVisible( false )
@@ -530,11 +547,19 @@ function Menu.Setup()
 			Frame:SetSize( fw, fh )
 			Frame:Center()
 			Frame:SetDraggable( true )
-			Menu.ApplyButton:SetPos( fw - 560, 30 )
+			if GmodLanguage == "ru" then
+				Menu.ApplyButton:SetPos( fw - 580, 30 )
+				Menu.AdvButton:SetPos( fw - 220, 3 )
+			elseif GmodLanguage == "tr" then
+				Menu.ApplyButton:SetPos( fw - 560, 30 )
+				Menu.AdvButton:SetPos( fw - 240, 3 )
+			else
+				Menu.ApplyButton:SetPos( fw - 560, 30 )
+				Menu.AdvButton:SetPos( fw - 200, 3 )
+			end
 			Menu.ApplyButton:SetVisible( true )
 			Menu.ResetButton:SetPos( 5, fh - 25 )
 			Menu.ResetButton:SetVisible( true )
-			Menu.AdvButton:SetPos( fw - 200, 3 )
 			Menu.AdvButton:SetVisible( true )
 			Menu.Right:SetVisible( true )
 			maxi_mode = 0
@@ -544,7 +569,7 @@ function Menu.Setup()
 	local mdl = Frame:Add( "DModelPanel" )
 	mdl:Dock( FILL )
 	--mdl:SetSize( 520, 0 )
-	mdl:SetFOV( 36 )
+	mdl:SetFOV( 36 ) -- PM FOV
 	mdl:SetCamPos( Vector( 0, 0, 0 ) )
 	mdl:SetDirectionalLight( BOX_RIGHT, Color( 255, 160, 80, 255 ) )
 	mdl:SetDirectionalLight( BOX_LEFT, Color( 80, 160, 255, 255 ) )
@@ -573,25 +598,54 @@ function Menu.Setup()
 	end
 
 	Menu.AdvButton = Frame:Add( "DButton" )
-	Menu.AdvButton:SetSize( 100, 18 )
-	Menu.AdvButton:SetPos( fw - 200, 3 )
-	Menu.AdvButton:SetText( "Visit Addon Page" )
+	if GmodLanguage == "ru" then
+		Menu.AdvButton:SetSize( 120, 18 )
+		Menu.AdvButton:SetPos( fw - 220, 3 )
+	elseif GmodLanguage == "tr" then
+		Menu.AdvButton:SetSize( 140, 18 )
+		Menu.AdvButton:SetPos( fw - 240, 3 )
+	else
+		Menu.AdvButton:SetSize( 100, 18 )
+		Menu.AdvButton:SetPos( fw - 200, 3 )
+	end
+	Menu.AdvButton:SetText( "#EPS.VisitAddonPage" )
 	Menu.AdvButton.DoClick = function()
-		gui.OpenURL( "http://steamcommunity.com/sharedfiles/filedetails/?id=2257795841" )
-		SetClipboardText( "http://steamcommunity.com/sharedfiles/filedetails/?id=2257795841" )
+		gui.OpenURL( "http://steamcommunity.com/sharedfiles/filedetails/?id=2247755443" )
+		SetClipboardText( "http://steamcommunity.com/sharedfiles/filedetails/?id=2247755443" )
 	end
 	
 	Menu.ApplyButton = Frame:Add( "DButton" )
-	Menu.ApplyButton:SetSize( 120, 30 )
-	Menu.ApplyButton:SetPos( fw - 560, 30 )
-	Menu.ApplyButton:SetText( "Apply playermodel" )
+	if GmodLanguage == "ru" then
+		Menu.ApplyButton:SetSize( 140, 30 )
+		Menu.ApplyButton:SetPos( fw - 580, 30 )
+	else
+		Menu.ApplyButton:SetSize( 120, 30 )
+		Menu.ApplyButton:SetPos( fw - 560, 30 )
+	end
+	Menu.ApplyButton:SetText( "#EPS.ApplyPM" )
 	Menu.ApplyButton:SetEnabled( LocalPlayer():IsAdmin() or GetConVar( "sv_playermodel_selector_instantly" ):GetBool() )
 	Menu.ApplyButton.DoClick = LoadPlayerModel
+	
+	/*
+	Menu.HandsFOVSlider = Frame:Add( "DNumSlider" )
+	Menu.HandsFOVSlider:SetPos( 50, 50 )				-- Set the position
+	Menu.HandsFOVSlider:SetSize( 300, 100 )			-- Set the size
+	Menu.HandsFOVSlider:SetText( "FOV" )	-- Set the text above the slider
+	Menu.HandsFOVSlider:SetMin( 0 )				 	-- Set the minimum number you can slide to
+	Menu.HandsFOVSlider:SetMax( 180 )				-- Set the maximum number you can slide to
+	Menu.HandsFOVSlider:SetDecimals( 0 )				-- Decimal places - zero for whole number
+	
+	Menu.AnimationComboBox = Frame:Add( "DComboBox" )
+	Menu.AnimationComboBox:SetSize( 80, 20 )
+	Menu.AnimationComboBox:SetPos( 5, 30 )
+	Menu.AnimationComboBox:SetText( "Animations" )
+	Menu.AnimationComboBox.DoClick = mdl.DefaultPos
+	*/
 	
 	Menu.ResetButton = Frame:Add( "DButton" )
 	Menu.ResetButton:SetSize( 40, 20 )
 	Menu.ResetButton:SetPos( 5, fh - 25 )
-	Menu.ResetButton:SetText( "Reset" )
+	Menu.ResetButton:SetText( "#EPS.Reset" )
 	Menu.ResetButton.DoClick = mdl.DefaultPos
 	
 	
@@ -604,21 +658,33 @@ function Menu.Setup()
 	end
 		
 		local modeltab = Menu.Right:Add( "DPropertySheet" )
-		Menu.Right:AddSheet( "Model", modeltab, "icon16/user.png" )
+		Menu.Right:AddSheet( "#EPS.Model", modeltab, "icon16/user.png" )
 		
 			local t = modeltab:Add( "DLabel" )
-			t:SetPos( 129, 1 )
+			if GmodLanguage == "ru" then
+				t:SetPos( 160, 1 )
+			elseif GmodLanguage == "tr" then
+				t:SetPos( 140, 1 )
+			else
+				t:SetPos( 129, 1 )
+			end
 			--t:SetSize( 100, 20 )
-			t:SetText( "Search:" )
+			t:SetText( "#EPS.Search" )
 			
 			Menu.ModelFilter = modeltab:Add( "DTextEntry" )
-			Menu.ModelFilter:SetPos( 168, 1 )
-			Menu.ModelFilter:SetSize( 246, 20 )
+			
+			if GmodLanguage == "ru" then
+				Menu.ModelFilter:SetPos( 200, 1 )
+				Menu.ModelFilter:SetSize( 200, 20 )
+			else
+				Menu.ModelFilter:SetPos( 168, 1 )
+				Menu.ModelFilter:SetSize( 246, 20 )
+			end
 			Menu.ModelFilter:SetUpdateOnType( true )
 			Menu.ModelFilter.OnValueChange = function() Menu.ModelPopulate() end
 			
 			local ModelScroll = modeltab:Add( "DScrollPanel" )
-			modeltab:AddSheet( "Icons", ModelScroll, "icon16/application_view_tile.png" )
+			modeltab:AddSheet( "#EPS.Model.Icons", ModelScroll, "icon16/application_view_tile.png" )
 			ModelScroll:DockMargin( 2, 0, 2, 2 )
 			ModelScroll:Dock( FILL )
 			
@@ -631,12 +697,12 @@ function Menu.Setup()
 			
 			
 			local ModelList = modeltab:Add( "DListView" )
-			modeltab:AddSheet( "Table", ModelList, "icon16/application_view_list.png" )
+			modeltab:AddSheet( "#EPS.Model.Table", ModelList, "icon16/application_view_list.png" )
 			ModelList:DockMargin( 5, 0, 5, 5 )
 			ModelList:Dock( FILL )
 			ModelList:SetMultiSelect( false )
-			ModelList:AddColumn( "Model" )
-			ModelList:AddColumn( "Path" )
+			ModelList:AddColumn( "#EPS.Model.Table.Model" )
+			ModelList:AddColumn( "#EPS.Model.Table.Path" )
 			ModelList.OnRowSelected = function()
 				local sel = ModelList:GetSelected()
 				if !sel[1] then return end
@@ -707,23 +773,34 @@ function Menu.Setup()
 			
 -------------------------------------------------------------
 		local handtab = Menu.Right:Add( "DPropertySheet" )
-		local htb = Menu.Right:AddSheet( "Hands", handtab, "icon16/attach.png" )
+		local htb = Menu.Right:AddSheet( "#EPS.Hands", handtab, "icon16/attach.png" )
 
 		htb.Tab.IsHandsTab = true
 		
 		local t = handtab:Add( "DLabel" )
-			t:SetPos( 129, 1 )
+			if GmodLanguage == "ru" then
+				t:SetPos( 160, 1 )
+			elseif GmodLanguage == "tr" then
+				t:SetPos( 140, 1 )
+			else
+				t:SetPos( 129, 1 )
+			end
 			--t:SetSize( 100, 20 )
-			t:SetText( "Search:" )
+			t:SetText( "#EPS.Search" )
 			
 			Menu.HandsFilter = handtab:Add( "DTextEntry" )
-			Menu.HandsFilter:SetPos( 168, 1 )
-			Menu.HandsFilter:SetSize( 246, 20 )
+			if GmodLanguage == "ru" then
+				Menu.HandsFilter:SetPos( 200, 1 )
+				Menu.HandsFilter:SetSize( 200, 20 )
+			else
+				Menu.HandsFilter:SetPos( 168, 1 )
+				Menu.HandsFilter:SetSize( 246, 20 )
+			end
 			Menu.HandsFilter:SetUpdateOnType( true )
 			Menu.HandsFilter.OnValueChange = function() Menu.HandsPopulate() end
 			
 			local ModelScroll = handtab:Add( "DScrollPanel" )
-			handtab:AddSheet( "Icons", ModelScroll, "icon16/application_view_tile.png" )
+			handtab:AddSheet( "#EPS.Hands.Icons", ModelScroll, "icon16/application_view_tile.png" )
 			ModelScroll:DockMargin( 2, 0, 2, 2 )
 			ModelScroll:Dock( FILL )
 			
@@ -736,12 +813,12 @@ function Menu.Setup()
 			
 			
 			local ModelList = handtab:Add( "DListView" )
-			handtab:AddSheet( "Table", ModelList, "icon16/application_view_list.png" )
+			handtab:AddSheet( "#EPS.Hands.Table", ModelList, "icon16/application_view_list.png" )
 			ModelList:DockMargin( 5, 0, 5, 5 )
 			ModelList:Dock( FILL )
 			ModelList:SetMultiSelect( false )
-			ModelList:AddColumn( "Model" )
-			ModelList:AddColumn( "Path" )
+			ModelList:AddColumn( "#EPS.Hands.Table.Model" )
+			ModelList:AddColumn( "#EPS.Hands.Table.Path" )
 			ModelList.OnRowSelected = function()
 				local sel = ModelList:GetSelected()
 				if !sel[1] then return end
@@ -781,7 +858,7 @@ function Menu.Setup()
 						icon:SetSize( 64, 64 )
 						icon:SetSpawnIcon( "icon64/playermodel.png" )
 						--icon:SetModel( model )
-						icon:SetTooltip( "Use playermodel" )
+						icon:SetTooltip( "#EPS.Hands.UsePM" )
 						table.insert( modelicons, icon )
 						icon.DoClick = function()
 							RunConsoleCommand( "cl_playerhands", "" )
@@ -821,16 +898,20 @@ function Menu.Setup()
 --------------------------------------------------------
 		
 		local favorites = Menu.Right:Add( "DPanel" )
-		Menu.Right:AddSheet( "Favorites", favorites, "icon16/star.png" )
+		Menu.Right:AddSheet( "#EPS.Favorites", favorites, "icon16/star.png" )
 		favorites:DockPadding( 8, 8, 8, 8 )
 		
 		local FavList = favorites:Add( "DListView" )
 		FavList:Dock( FILL )
 		FavList:SetMultiSelect( true )
-		FavList:AddColumn( "Favorites" )
-		FavList:AddColumn( "Model" )
-		FavList:AddColumn( "Skin" ):SetFixedWidth( 25 )
-		FavList:AddColumn( "Bodygroups" )
+		FavList:AddColumn( "#EPS.Favorites" )
+		FavList:AddColumn( "#EPS.Favorites.Model" )
+		if GmodLanguage == "ru" or GmodLanguage == "pl" then
+			FavList:AddColumn( "#EPS.Favorites.Skin" ):SetFixedWidth( 40 )
+		else
+			FavList:AddColumn( "#EPS.Favorites.Skin" ):SetFixedWidth( 25 )
+		end
+		FavList:AddColumn( "#EPS.Favorites.Bodygroups" )
 		FavList.DoDoubleClick = function( id, sel )
 			local name = tostring( FavList:GetLine( sel ):GetValue( 1 ) )
 			if istable( Favorites[name] ) then
@@ -856,7 +937,7 @@ function Menu.Setup()
 		b:Dock( TOP )
 		b:SetHeight( 25 )
 		b:DockMargin( 0, 0, 200, 10 )
-		b:SetText( "Load selected Favorite" )
+		b:SetText( "#EPS.Favorites.LoadFavorite" )
 		b.DoClick = function()
 			local sel = FavList:GetSelected()
 			if !sel[1] then return end
@@ -874,7 +955,7 @@ function Menu.Setup()
 		local t = favorites:Add( "DLabel" )
 		t:Dock( BOTTOM )
 		t:SetAutoStretchVertical( true )
-		t:SetText( "Here you can save your favorite playermodel combinations. To do this:\n1. Select a model and setup the skin and bodygroups as you wish.\n2. Enter a unique name into the textfield and click \"Add new favorite\".\n3. Load your favorite by selecting it in the list below and clicking \"Load selected\".\nYou can also apply existing favorites by console command:\nplayermodel_loadfav \"the favorite's name\"" )
+		t:SetText( "#EPS.Favorites.Desc" )
 		t:SetDark( true )
 		t:SetWrap( true )
 		
@@ -900,7 +981,7 @@ function Menu.Setup()
 		local b = control:Add( "DButton" )
 		b:SetPos( 0, 30 )
 		b:SetSize( 125, 20 )
-		b:SetText( "Add new favorite" )
+		b:SetText( "#EPS.Favorites.AddNewFavorite" )
 		b.DoClick = function()
 			local name = FavEntry:GetValue()
 			if name == "" then return end
@@ -910,7 +991,7 @@ function Menu.Setup()
 		local b = control:Add( "DButton" )
 		b:SetPos( 135, 30 )
 		b:SetSize( 125, 20 )
-		b:SetText( "Replace selected" )
+		b:SetText( "#EPS.Favorites.ReplaceSelected" )
 		b.DoClick = function()
 			local sel = FavList:GetSelected()
 			if sel[2] then return end
@@ -922,7 +1003,7 @@ function Menu.Setup()
 		local b = control:Add( "DButton" )
 		b:SetPos( 270, 30 )
 		b:SetSize( 125, 20 )
-		b:SetText( "Delete all selected" )
+		b:SetText( "#EPS.Favorites.DeleteAllSelected" )
 		b.DoClick = function()
 			local sel = FavList:GetSelected()
 			for k, v in pairs( sel ) do
@@ -935,7 +1016,7 @@ function Menu.Setup()
 		
 		
 		local bdcontrols = Menu.Right:Add( "DPanel" )
-		local bgtab = Menu.Right:AddSheet( "Bodygroups", bdcontrols, "icon16/group.png" )
+		local bgtab = Menu.Right:AddSheet( "#EPS.Bodygroups", bdcontrols, "icon16/group.png" )
 		bdcontrols:DockPadding( 8, 8, 8, 8 )
 
 		local bdcontrolspanel = bdcontrols:Add( "DPanelList" )
@@ -944,7 +1025,7 @@ function Menu.Setup()
 		
 		-- Hands
 		local h__bdcontrols = Menu.Right:Add( "DPanel" )
-		local h__bgtab = Menu.Right:AddSheet( "Handgroups", h__bdcontrols, "icon16/group_link.png" )
+		local h__bgtab = Menu.Right:AddSheet( "#EPS.Handgroups", h__bdcontrols, "icon16/group_link.png" )
 		h__bdcontrols:DockPadding( 8, 8, 8, 8 )
 
 		h__bgtab.Tab.IsHandsTab = true
@@ -955,7 +1036,7 @@ function Menu.Setup()
 		
 		
 		local flexcontrols = Menu.Right:Add( "DPanel" )
-		local flextab = Menu.Right:AddSheet( "Flexes", flexcontrols, "icon16/emoticon_wink.png" )
+		local flextab = Menu.Right:AddSheet( "#EPS.Flexes", flexcontrols, "icon16/emoticon_wink.png" )
 		flexcontrols:DockPadding( 8, 8, 8, 8 )
 		
 		local flexcontrolspanel = flexcontrols:Add( "DPanelList" )
@@ -964,11 +1045,11 @@ function Menu.Setup()
 		
 		
 		local controls = Menu.Right:Add( "DPanel" )
-		Menu.Right:AddSheet( "Colors", controls, "icon16/color_wheel.png" )
+		Menu.Right:AddSheet( "#EPS.Colors", controls, "icon16/color_wheel.png" )
 		controls:DockPadding( 8, 8, 8, 8 )
 
 		local lbl = controls:Add( "DLabel" )
-		lbl:SetText( "Player color" )
+		lbl:SetText( "#EPS.Colors.PlayerColor" )
 		lbl:SetTextColor( Color( 0, 0, 0, 255 ) )
 		lbl:Dock( TOP )
 
@@ -979,7 +1060,7 @@ function Menu.Setup()
 		plycol:SetSize( 200, ( fh - 160) / 2 )
 
 		local lbl = controls:Add( "DLabel" )
-		lbl:SetText( "Physgun color" )
+		lbl:SetText( "#EPS.Colors.PhysgunColor" )
 		lbl:SetTextColor( Color( 0, 0, 0, 255 ) )
 		lbl:DockMargin( 0, 8, 0, 0 )
 		lbl:Dock( TOP )
@@ -995,7 +1076,7 @@ function Menu.Setup()
 		b:DockMargin( 0, 8, 0, 0 )
 		b:Dock( TOP )
 		b:SetSize( 150, 20 )
-		b:SetText( "Reset to default values" )
+		b:SetText( "#EPS.Colors.ResetToDefault" )
 		b.DoClick = function()
 			plycol:SetVector( Vector( 0.24, 0.34, 0.41 ) )
 			wepcol:SetVector( Vector( 0.30, 1.80, 2.10 ) )
@@ -1005,11 +1086,11 @@ function Menu.Setup()
 		
 		
 		local moretab = Menu.Right:Add( "DPropertySheet" )
-		Menu.Right:AddSheet( "Settings", moretab, "icon16/key.png" )
+		Menu.Right:AddSheet( "#EPS.Settings", moretab, "icon16/key.png" )
 			
 			
 			local panel = moretab:Add( "DPanel" )
-			moretab:AddSheet( "Client", panel, "icon16/status_online.png" )
+			moretab:AddSheet( "#EPS.Settings.Client", panel, "icon16/status_online.png" )
 			panel:DockPadding( 10, 10, 10, 10 )
 			
 			local panel = panel:Add( "DScrollPanel" )
@@ -1020,7 +1101,7 @@ function Menu.Setup()
 			c:Dock( TOP )
 			c:DockMargin( 0, 0, 0, 5 )
 			c:SetValue( GetConVar(c.cvar):GetBool() )
-			c:SetText( "Enforce your playermodel" )
+			c:SetText( "#EPS.Settings.Client.EnforcePM" )
 			c:SetDark( true )
 			c.OnChange = function( p, v )
 				RunConsoleCommand( c.cvar, v == true and "1" or "0" )
@@ -1030,7 +1111,7 @@ function Menu.Setup()
 			t:Dock( TOP )
 			t:DockMargin( 0, 0, 0, 20 )
 			t:SetAutoStretchVertical( true )
-			t:SetText( "If enabled, your selected playermodel will be protected. No other function will be able to change your playermodel anymore." )
+			t:SetText( "#EPS.Settings.Client.EnforcePM.Desc" )
 			t:SetDark( true )
 			t:SetWrap( true )
 			
@@ -1039,7 +1120,7 @@ function Menu.Setup()
 			c:Dock( TOP )
 			c:DockMargin( 0, 0, 0, 5 )
 			c:SetValue( GetConVar(c.cvar):GetBool() )
-			c:SetText( "Use Player color as background" )
+			c:SetText( "#EPS.Settings.Client.PlayerColorBG" )
 			c:SetDark( true )
 			c:SizeToContents()
 			c.OnChange = function( p, v )
@@ -1050,7 +1131,7 @@ function Menu.Setup()
 			t:Dock( TOP )
 			t:DockMargin( 0, 0, 0, 20 )
 			t:SetAutoStretchVertical( true )
-			t:SetText( "If enabled, your selected player color will be used as the menu background. If disabled, the background will be grey." )
+			t:SetText( "#EPS.Settings.Client.PlayerColorBG.Desc" )
 			t:SetDark( true )
 			t:SetWrap( true )
 			
@@ -1059,7 +1140,7 @@ function Menu.Setup()
 			c:Dock( TOP )
 			c:DockMargin( 0, 0, 0, 5 )
 			c:SetValue( GetConVar(c.cvar):GetBool() )
-			c:SetText( "Transparent background" )
+			c:SetText( "#EPS.Settings.Client.TransparentBG" )
 			c:SetDark( true )
 			c:SizeToContents()
 			c.OnChange = function( p, v )
@@ -1070,7 +1151,7 @@ function Menu.Setup()
 			t:Dock( TOP )
 			t:DockMargin( 0, 0, 0, 20 )
 			t:SetAutoStretchVertical( true )
-			t:SetText( "If enabled, the menu backgroup will be transparent. If disabled, the background will be opaque." )
+			t:SetText( "#EPS.Settings.Client.TransparentBG.Desc" )
 			t:SetDark( true )
 			t:SetWrap( true )
 			
@@ -1079,7 +1160,7 @@ function Menu.Setup()
 			c:Dock( TOP )
 			c:DockMargin( 0, 0, 0, 5 )
 			c:SetValue( GetConVar(c.cvar):GetBool() )
-			c:SetText( "Show flexes tab" )
+			c:SetText( "#EPS.Settings.Client.ShowFlexes" )
 			c:SetDark( true )
 			c:SizeToContents()
 			c.OnChange = function( p, v )
@@ -1091,7 +1172,7 @@ function Menu.Setup()
 			t:Dock( TOP )
 			t:DockMargin( 0, 0, 0, 20 )
 			t:SetAutoStretchVertical( true )
-			t:SetText( "This allows you to manipulate flexes on your playermodel. However, flex manipulation is not really made for playermodels and will cause issues. This includes the following:\n- Eye blinking no longer working.\n- Faces might be distorted unless the flexes are corrected manually.\n- Might break the faces of incompatible playermodels completely.\n- Even if you put all flexes to default value, the engine still considers them as manipulated. Models with problems won't be fixed.\nYou must switch your model once, for the tab to appear!" )
+			t:SetText( "#EPS.Settings.Client.ShowFlexes.Desc" )
 			t:SetDark( true )
 			t:SetWrap( true )
 			
@@ -1099,7 +1180,7 @@ function Menu.Setup()
 			b:Dock( TOP )
 			b:DockMargin( 0, 0, 270, 5 )
 			b:SetHeight( 15 )
-			b:SetText( "Rebuild spawn icons" )
+			b:SetText( "#EPS.Settings.Client.RebuildIcon" )
 			b.DoClick = function()
 				for _, icon in pairs( modelicons ) do
 					icon:RebuildSpawnIcon()
@@ -1110,7 +1191,7 @@ function Menu.Setup()
 			t:Dock( TOP )
 			t:DockMargin( 0, 0, 0, 20 )
 			t:SetAutoStretchVertical( true )
-			t:SetText( "Forces all playermodel icons to be re-rendered. Useful if the icons are outdated after custom models changed their appearance. This may take a while, depending on the number of models and your PC's speed." )
+			t:SetText( "#EPS.Settings.Client.RebuildIcon.Desc" )
 			t:SetDark( true )
 			t:SetWrap( true )
 			
@@ -1118,7 +1199,7 @@ function Menu.Setup()
 			if LocalPlayer():IsAdmin() then
 				
 				local panel = moretab:Add( "DPanel" )
-				moretab:AddSheet( "Server", panel, "icon16/world.png" )
+				moretab:AddSheet( "#EPS.Settings.Server", panel, "icon16/world.png" )
 				panel:DockPadding( 10, 10, 10, 10 )
 				
 				local panel = panel:Add( "DScrollPanel" )
@@ -1136,7 +1217,7 @@ function Menu.Setup()
 				c:Dock( TOP )
 				c:DockMargin( 0, 0, 0, 5 )
 				c:SetValue( GetConVar(c.cvar):GetBool() )
-				c:SetText( "Enable playermodel enforcement" )
+				c:SetText( "#EPS.Settings.Server.EnablePMEnforcement" )
 				c:SetDark( true )
 				c.OnChange = ChangeCVar
 				
@@ -1144,7 +1225,7 @@ function Menu.Setup()
 				t:Dock( TOP )
 				t:DockMargin( 0, 0, 0, 20 )
 				t:SetAutoStretchVertical( true )
-				t:SetText( "If enabled, selected playermodels will be enforced and protected. No gamemodes, maps or addons can overwrite them anymore. Players can toggle this function individually, using the checkbox on top of the menu.\nIf disabled, only the manual button works outside of Sandbox." )
+				t:SetText( "#EPS.Settings.Server.EnablePMEnforcement.Desc" )
 				t:SetDark( true )
 				t:SetWrap( true )
 				
@@ -1153,7 +1234,7 @@ function Menu.Setup()
 				c:Dock( TOP )
 				c:DockMargin( 0, 0, 0, 5 )
 				c:SetValue( GetConVar(c.cvar):GetBool() )
-				c:SetText( "Allow instant changes" )
+				c:SetText( "#EPS.Settings.Server.AllowInstantChanges" )
 				c:SetDark( true )
 				c.OnChange = ChangeCVar
 				
@@ -1161,7 +1242,7 @@ function Menu.Setup()
 				t:Dock( TOP )
 				t:DockMargin( 0, 0, 0, 20 )
 				t:SetAutoStretchVertical( true )
-				t:SetText( "If enabled, players can apply their changes instantly instead of having to respawn." )
+				t:SetText( "#EPS.Settings.Server.AllowInstantChanges.Desc" )
 				t:SetDark( true )
 				t:SetWrap( true )
 				
@@ -1170,7 +1251,7 @@ function Menu.Setup()
 				c:Dock( TOP )
 				c:DockMargin( 0, 0, 0, 5 )
 				c:SetValue( GetConVar(c.cvar):GetBool() )
-				c:SetText( "Allow players to change flexes" )
+				c:SetText( "#EPS.Settings.Server.AllowFlexes" )
 				c:SetDark( true )
 				c.OnChange = ChangeCVar
 				
@@ -1178,7 +1259,7 @@ function Menu.Setup()
 				t:Dock( TOP )
 				t:DockMargin( 0, 0, 0, 20 )
 				t:SetAutoStretchVertical( true )
-				t:SetText( "If enabled, players can change the flexes for their playermodels. This will break player blinking and may cause other issues. Enable at own risk. Players can only reset their flexes by disconnecting." )
+				t:SetText( "#EPS.Settings.Server.AllowFlexes.Desc" )
 				t:SetDark( true )
 				t:SetWrap( true )
 				
@@ -1187,7 +1268,7 @@ function Menu.Setup()
 				c:Dock( TOP )
 				c:DockMargin( 0, 0, 0, 5 )
 				c:SetValue( GetConVar(c.cvar):GetBool() )
-				c:SetText( "Enable in all gamemodes" )
+				c:SetText( "#EPS.Settings.Server.EnableInAllGM" )
 				c:SetDark( true )
 				c.OnChange = ChangeCVar
 				
@@ -1195,7 +1276,7 @@ function Menu.Setup()
 				t:Dock( TOP )
 				t:DockMargin( 0, 0, 0, 20 )
 				t:SetAutoStretchVertical( true )
-				t:SetText( "If enabled, the PlayerModel Selector will be available for all players in every gamemode. If disabled, only Admins can use it outside of Sandbox." )
+				t:SetText( "#EPS.Settings.Server.EnableInAllGM.Desc" )
 				t:SetDark( true )
 				t:SetWrap( true )
 				
@@ -1203,7 +1284,7 @@ function Menu.Setup()
 				s.cvar = "sv_playermodel_selector_limit"
 				s:Dock( TOP )
 				s:DockMargin( 0, 0, 0, 5 )
-				s:SetText( "Request limit" )
+				s:SetText( "#EPS.Settings.Server.RequestLimit" )
 				s:SetDark( true )
 				s:SetDecimals( 0 )
 				s:SetMax( 900 )
@@ -1219,13 +1300,13 @@ function Menu.Setup()
 				t:Dock( TOP )
 				t:DockMargin( 0, 0, 0, 20 )
 				t:SetAutoStretchVertical( true )
-				t:SetText( "Timelimit in seconds that players have to wait, before they can use the instant change function again. Set to 0 to disable." )
+				t:SetText( "#EPS.Settings.Server.RequestLimit.Desc" )
 				t:SetDark( true )
 				t:SetWrap( true )
 				
 				
 				local panel = moretab:Add( "DPanel" )
-				moretab:AddSheet( "GM Blacklist", panel, "icon16/delete.png" )
+				moretab:AddSheet( "#EPS.Settings.GM_Blacklist", panel, "icon16/delete.png" )
 				panel:DockPadding( 10, 10, 10, 10 )
 				
 				local Blacklist = panel:Add( "DListView" )
@@ -1233,7 +1314,7 @@ function Menu.Setup()
 				Blacklist:DockMargin( 0, 0, 20, 0 )
 				Blacklist:SetWidth( 150 )
 				Blacklist:SetMultiSelect( true )
-				Blacklist:AddColumn( "Blacklisted gamemodes" )
+				Blacklist:AddColumn( "#EPS.Settings.GM_Blacklist.ExistedGM" )
 				
 				net.Receive("lf_playermodel_blacklist", function()
 					local tbl = net.ReadTable()
@@ -1255,7 +1336,7 @@ function Menu.Setup()
 				t:Dock( TOP )
 				t:DockMargin( 0, 0, 0, 20 )
 				t:SetAutoStretchVertical( true )
-				t:SetText( "Here you can blacklist incompatible gamemodes.\n\nPlayers (including Admins) can't change their playermodels in those gamemodes, regardless of other settings." )
+				t:SetText( "#EPS.Settings.GM_Blacklist.Desc" )
 				t:SetDark( true )
 				t:SetWrap( true )
 				
@@ -1263,7 +1344,7 @@ function Menu.Setup()
 				b:Dock( TOP )
 				b:DockMargin( 0, 0, 0, 20 )
 				b:SetHeight( 25 )
-				b:SetText( "Add current gamemode to Blacklist" )
+				b:SetText( "#EPS.Settings.GM_Blacklist.AddCurrent" )
 				b.DoClick = function()
 					if GAMEMODE_NAME == "sandbox" then return end
 					net.Start( "lf_playermodel_blacklist" )
@@ -1281,7 +1362,7 @@ function Menu.Setup()
 				b:Dock( TOP )
 				b:DockMargin( 0, 0, 0, 20 )
 				b:SetHeight( 20 )
-				b:SetText( "Manually add gamemode" )
+				b:SetText( "#EPS.Settings.GM_Blacklist.ManuallyAddGM" )
 				b.DoClick = function()
 					local name = TextEntry:GetValue()
 					if name == "" or name == "sandbox" then return end
@@ -1295,7 +1376,7 @@ function Menu.Setup()
 				b:Dock( TOP )
 				b:DockMargin( 0, 0, 0, 0 )
 				b:SetHeight( 25 )
-				b:SetText( "Remove selected gamemodes" )
+				b:SetText( "#EPS.Settings.GM_Blacklist.RemoveSelected" )
 				b.DoClick = function()
 					local tbl = { }
 					local sel = Blacklist:GetSelected()
@@ -1313,7 +1394,7 @@ function Menu.Setup()
 				if TFAVOX_Models then
 					
 					local panel = moretab:Add( "DPanel" )
-					moretab:AddSheet( "VOX", panel, "icon16/sound.png" )
+					moretab:AddSheet( "#EPS.Settings.VOX", panel, "icon16/sound.png" )
 					panel:DockPadding( 10, 10, 10, 10 )
 					
 					local VOXlist = panel:Add( "DListView" )
@@ -1321,8 +1402,8 @@ function Menu.Setup()
 					VOXlist:DockMargin( 0, 0, 0, 10 )
 					VOXlist:SetHeight( ( fh - 126 - 44 ) / 2 ) -- 260
 					VOXlist:SetMultiSelect( true )
-					VOXlist:AddColumn( "PlayerModel" )
-					VOXlist:AddColumn( "assigned VOX pack" )
+					VOXlist:AddColumn( "#EPS.Settings.VOX.PlayerModel" )
+					VOXlist:AddColumn( "#EPS.Settings.VOX.Assigned" )
 					
 					net.Receive("lf_playermodel_voxlist", function()
 						local tbl = net.ReadTable()
@@ -1351,7 +1432,7 @@ function Menu.Setup()
 					VOXinstalled:DockMargin( 0, 10, 0, 0 )
 					VOXinstalled:SetHeight( ( fh - 126 - 44 ) / 2 )
 					VOXinstalled:SetMultiSelect( false )
-					VOXinstalled:AddColumn( "Available VOX packs" )
+					VOXinstalled:AddColumn( "#EPS.Settings.VOX.AvailableVOX" )
 					
 					if istable( TFAVOX_Models ) then
 						for k, v in pairs( TFAVOX_Models ) do
@@ -1364,7 +1445,7 @@ function Menu.Setup()
 					b:Dock( LEFT )
 					--b:DockPadding( 100, 0, 100, 0 )
 					b:SetWidth( 200 )
-					b:SetText( "Assign VOX pack to current PlayerModel" )
+					b:SetText( "#EPS.Settings.VOX.AssignToCurrent" )
 					b.DoClick = function()
 						local sel = VOXinstalled:GetSelected()
 						if !sel[1] then return end
@@ -1381,7 +1462,7 @@ function Menu.Setup()
 					b:Dock( RIGHT )
 					--b:DockPadding( 100, 0, 100, 0 )
 					b:SetWidth( 170 )
-					b:SetText( "Remove selected assignment" )
+					b:SetText( "#EPS.Settings.VOX.RemoveSelected" )
 					b.DoClick = function()
 						local tbl = { }
 						local sel = VOXlist:GetSelected()
@@ -1401,7 +1482,7 @@ function Menu.Setup()
 			
 			
 			local panel = moretab:Add( "DPanel" )
-			moretab:AddSheet( "Info", panel, "icon16/information.png" )
+			moretab:AddSheet( "#EPS.Settings.Info", panel, "icon16/information.png" )
 			panel:DockPadding( 0, 0, 0, 0 )
 			
 			local t = panel:Add( "DHTML" )
@@ -1412,9 +1493,12 @@ function Menu.Setup()
 			t:AddFunction( "url", "open", function( str ) gui.OpenURL( str ) end )
 			t:AddFunction( "url", "copy", function( str ) SetClipboardText( str ) end )
 			
+			local title = string.format(language.GetPhrase("EPS.Title"),Version)
+			
 			local intro = [[Created by <a href="javascript:url.open( 'http://steamcommunity.com/id/libertyforce' )" oncontextmenu="url.copy( 'http://steamcommunity.com/id/libertyforce' )">LibertyForce</a>.<br>Thank you for installing this addon! Enjoying it?<br>
 			Modified by <a href="javascript:url.open( 'http://steamcommunity.com/id/Fesiug' )" oncontextmenu="url.copy( 'http://steamcommunity.com/id/Fesiug' )">Fesiug</a>. You can now customize your hands!<br>
 			Modified by <a href="javascript:url.open( 'http://steamcommunity.com/id/yurannnzzz' )" oncontextmenu="url.copy( 'http://steamcommunity.com/id/yurannnzzz' )">YuRaNnNzZZ</a>. You can see your selected hands!<br>
+			Modified by <a href="javascript:url.open( 'http://steamcommunity.com/id/IBRS-4Ever' )" oncontextmenu="url.copy( 'http://steamcommunity.com/id/IBRS-4Ever' )">Insane Black Rock Shooter</a>. Localization Support!<br>
 			<a href="javascript:url.open( 'http://steamcommunity.com/sharedfiles/filedetails/?id=504945881' )" oncontextmenu="url.copy( 'http://steamcommunity.com/sharedfiles/filedetails/?id=504945881' )">Please leave a LIKE on the workshop page.</a>]]
 			if !game.SinglePlayer() and !LocalPlayer():IsSuperAdmin() then
 				intro = [[This server is running Enhanced PlayerModel Selector by <a href="javascript:url.open( 'http://steamcommunity.com/id/libertyforce' )" oncontextmenu="url.copy( 'http://steamcommunity.com/id/libertyforce' )">LibertyForce</a>. Enjoying it?<br>
@@ -1464,7 +1548,7 @@ function Menu.Setup()
 						</style>
 					</head>
 					<body>
-						<h1>Enhanced Playermodel Selector ]]..Version..[[</h1> 
+						<h1>]]..title..[[</h1> 
 						<p>]]..intro..[[</p>
 						<h2>Compatible Addons</h1>
 						<p>Enhanced Playermodel Selector provides additional functionality with those addons installed:
@@ -1482,6 +1566,26 @@ function Menu.Setup()
 							<li><a href="javascript:url.open( 'http://steamcommunity.com/sharedfiles/filedetails/?id=351603470' )" oncontextmenu="url.copy( 'http://steamcommunity.com/sharedfiles/filedetails/?id=351603470' )">Anti-FriendlyFire (NPC)</a><br>
 							<small>If you where ever annoyed by your allies killing each other in friendly fire, which made large NPC battle pretty much useless, then you have just found the solution! This mod allows you to turn off Friendly Fire towards and between NPCs.</small></li>
 						</ul></p>
+						<table align=center>
+							<tr align=center>
+								<th><h1>Translators:</h1></th>
+							</tr>
+							<tr align=center>
+								<td><a href="javascript:url.open( 'http://steamcommunity.com/id/IBRS-4Ever' )" oncontextmenu="url.copy( 'http://steamcommunity.com/id/IBRS-4Ever' )">Insane Black Rock Shooter</a> - Simplified Chinese</td>
+							</tr>
+							<tr align=center>
+								<td><a href="javascript:url.open( 'http://steamcommunity.com/id/berrygaming' )" oncontextmenu="url.copy( 'http://steamcommunity.com/id/berrygaming' )">Berry</a> - Russian</td>
+							</tr>
+							<tr align=center>
+								<td><a href="javascript:url.open( 'http://steamcommunity.com/id/TheRealStann' )" oncontextmenu="url.copy( 'http://steamcommunity.com/id/TheRealStann' )">Stann</a> - Polish</td>
+							</tr>
+							<tr align=center>
+								<td><a href="javascript:url.open( 'https://github.com/SheepYhangCN' )" oncontextmenu="url.copy( 'https://github.com/SheepYhangCN' )">憨憨羊の宇航鸽鸽</a> - Traditional Chinese</td>
+							</tr>
+							<tr align=center>
+								<td><a href="javascript:url.open( 'https://steamcommunity.com/id/talhaberkay' )" oncontextmenu="url.copy( 'https://steamcommunity.com/id/talhaberkay' )">Matt</a> - Turkish</td>
+							</tr>
+						</table>
 						<h2 style="font-size: 10px">Left click: Open in Steam Overlay.<br>Right click: Copy URL to clipboard for use in browser.</h2>
 					</body>
 				</html>
@@ -1584,7 +1688,7 @@ function Menu.Setup()
 		if ( nskins > 0 ) then
 			local skins = vgui.Create( "DNumSlider" )
 			skins:Dock( TOP )
-			skins:SetText( "Skin" )
+			skins:SetText( "#EPS.Skin" )
 			skins:SetDark( true )
 			skins:SetTall( 50 )
 			skins:SetDecimals( 0 )
@@ -1629,7 +1733,7 @@ function Menu.Setup()
 			if ( nskins > 0 ) then
 				local skins = vgui.Create( "DNumSlider" )
 				skins:Dock( TOP )
-				skins:SetText( "Skin" )
+				skins:SetText( "#EPS.Skin" )
 				skins:SetDark( true )
 				skins:SetTall( 50 )
 				skins:SetDecimals( 0 )
@@ -1674,7 +1778,7 @@ function Menu.Setup()
 			local t = vgui.Create( "DLabel" )
 			t:Dock( TOP )
 			t:SetTall( 70 )
-			t:SetText( "Notes:\n-The model preview for flexes doesn't work correctly. However, they will be visible on your playermodel when you apply them.\n- The default values provided might not be correct and cause distorted faces.\n- There is no way to reset (or fix) flex manipulation besides disconnecting." )
+			t:SetText( "#EPS.Notes" )
 			t:SetDark( true )
 			t:SetWrap( true )
 			flexcontrolspanel:AddItem( t )
@@ -1813,7 +1917,7 @@ function Menu.Setup()
 		if ( Menu.IsHandsTabActive() ) then
 			self.WasHandsTab = true
 
-			self:SetFOV( 65 )
+			self:SetFOV( 65 ) -- Hands FOV
 
 			self.Angles = handsang
 			self.Pos = vector_origin
@@ -1827,7 +1931,7 @@ function Menu.Setup()
 		elseif ( self.WasHandsTab ) then -- reset position on tab switch
 			self.WasHandsTab = false
 
-			self:SetFOV( 36 )
+			self:SetFOV( 36 ) -- PM FOV after switching back from Hands Tab
 
 			self.Pos = Vector( -100, 0, -61 )
 			self.Angles = Angle( 0, 0, 0 )
